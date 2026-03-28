@@ -104,11 +104,18 @@ hayResolvente c1 c2 = any (\l -> comp l `elem` c2) c1
 rs :: [Clausula] -> [Clausula]
 rs [] = []
 rs [x] = [x]
-rs (x:(y:xs)) = 
-    if hayResolvente x y
+rs (x:(y:xs)) = if hayResolvente x y
         then (x:(y:xs)) ++ [resolucion x y] ++ rs (x:xs) ++ rs (y:xs)
         else (x:(y:xs)) ++ rs (x:xs) ++ rs (y:xs)
 
 -- Ejercicio 2
 saturacion :: Prop -> Bool
-saturacion = undefined
+saturacion prop = saturar (clausulas prop)
+  where
+    saturar cs
+        | [] `elem` cs = False
+        | otherwise = 
+            let cs' = nub (rs cs)
+            in if length cs' == length cs
+               then True
+               else saturar cs'
